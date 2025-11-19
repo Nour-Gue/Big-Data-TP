@@ -1,0 +1,150 @@
+Cassandra Practical Work Report – Restaurants & Inspections Database
+
+1. Introduction
+
+This practical work aims to introduce the NoSQL database Apache Cassandra, its installation, configuration, table creation, data importation, and data querying using CQL (Cassandra Query Language).
+The dataset contains information about restaurants and inspection reports, and is provided in CSV format.
+
+2. Environment Setup
+2.1 Pull the Cassandra Docker Image
+
+docker pull cassandra:latest
+
+2.2 Run the Cassandra Container
+
+docker run --name mon-cassandra -d cassandra:latest
+
+2.3 Verify that the Container is Running
+
+docker ps
+
+2.4 Access Cassandra Using cqlsh
+
+docker exec -it mon-cassandra cqlsh
+
+3. Keyspace Creation
+
+Inside cqlsh, create the keyspace resto_NY:
+
+CREATE KEYSPACE IF NOT EXISTS resto_NY
+WITH REPLICATION = {
+    'class' : 'SimpleStrategy',
+    'replication_factor': 1
+};
+
+Select the keyspace:
+
+USE resto_NY;
+
+4. Table Creation
+4.1 Restaurant Table
+
+CREATE TABLE Restaurant (
+    id INT,
+    name VARCHAR,
+    borough VARCHAR,
+    buildingnum VARCHAR,
+    street VARCHAR,
+    zipcode INT,
+    phone text,
+    cuisinetype VARCHAR,
+    PRIMARY KEY (id)
+);
+
+Create an index on cuisinetype:
+
+CREATE INDEX fk_Restaurant_cuisine ON Restaurant (cuisinetype);
+
+4.2 Inspection Table
+
+CREATE TABLE Inspection (
+    idrestaurant INT,
+    inspectiondate date,
+    violationcode VARCHAR,
+    violationdescription VARCHAR,
+    criticalflag VARCHAR,
+    score INT,
+    grade VARCHAR,
+    PRIMARY KEY (idrestaurant, inspectiondate)
+);
+
+Create an index on grade:
+
+CREATE INDEX fk_Inspection_Restaurant ON Inspection (grade);
+
+5. Importing the Data
+5.1 Copy CSV Files into the Docker Container
+
+docker cp "C:\Users\LAPTA\Downloads\restaurants.csv" mon-cassandra:/
+docker cp "C:\Users\LAPTA\Downloads\restaurants_inspections.csv" mon-cassandra:/
+
+5.2 Confirm Files Inside the Container
+
+docker exec -it mon-cassandra ls /
+
+6. Import CSV Data into Cassandra
+6.1 Import Restaurant Data
+
+Inside cqlsh:
+
+COPY Restaurant (id, name, borough, buildingnum, street, zipcode, phone, cuisinetype)
+FROM '/restaurants.csv' WITH DELIMITER=',';
+
+6.2 Import Inspection Data
+
+COPY Inspection (idrestaurant, inspectiondate, violationcode, violationdescription, criticalflag, score, grade)
+FROM '/restaurants_inspections.csv' WITH DELIMITER=',';
+
+7. Verifying Imported Data
+Count rows:
+
+SELECT count(*) FROM Restaurant;
+SELECT count(*) FROM Inspection;
+
+Expected results:
+
+    ~25,000 restaurants
+
+    ~440,000 inspections
+
+8. CQL Queries (Required Tasks)
+1. List all restaurants
+
+SELECT * FROM Restaurant LIMIT 50;
+
+2. List names of all restaurants
+
+SELECT name FROM Restaurant LIMIT 50;
+
+3. Get name and borough of restaurant with id = 41569764
+
+SELECT name, borough FROM Restaurant
+WHERE id = 41569764;
+
+4. Get inspection dates and grades for the same restaurant
+
+SELECT inspectiondate, grade FROM Inspection
+WHERE idrestaurant = 41569764;
+
+5. List names of French cuisine restaurants
+
+SELECT name FROM Restaurant
+WHERE cuisinetype = 'French' ALLOW FILTERING;
+
+9. Conclusion
+
+This practical work provided hands-on experience with:
+
+    Deploying Cassandra using Docker
+
+    Creating keyspaces and tables
+
+    Understanding primary keys and secondary indexes
+
+    Importing large CSV datasets
+
+    Querying data using CQL
+
+    Discovering limitations of Cassandra (e.g., filtering, no joins)
+
+The TP demonstrates how Cassandra is suitable for large-scale, high-volume, distributed datasets.

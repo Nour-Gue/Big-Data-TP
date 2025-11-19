@@ -1,0 +1,29 @@
+TP04 — Docker Steps
+
+1. Create a Docker Hub account
+Go to https://hub.docker.com
+
+2. Build the Docker image from TP03
+docker build -t nour222g/tp03 .
+
+3. Login to Docker Hub
+docker login
+
+4. Push the image to Docker Hub
+I uploaded my image to my Docker Hub repository.
+docker push nour222g/tp03
+
+5. Pull the image from Docker Hub
+I downloaded the same image again to make sure it was uploaded correctly.
+docker pull nour222g/tp03
+
+6. Create a Docker network
+docker network create tpnet
+
+7. Create and run three containers
+docker run -d --name c1 --network tpnet -p 5001:5000 nour222g/tp03
+docker run -d --name c2 --network tpnet -p 5002:5000 nour222g/tp03
+docker run -d --name c3 --network tpnet -p 5003:5000 nour222g/tp03
+
+8. Verify That the Three Containers Are Properly Running and Connected
+docker network inspect tpnet

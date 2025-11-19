@@ -1,0 +1,82 @@
+// ---------------------------------------
+// TP5 MongoDB — Création et CRUD
+// ---------------------------------------
+
+// 1) Create and select database
+use info
+
+// Check active DB
+db
+
+// ---------------------------------------
+// 2) Insert Documents
+// ---------------------------------------
+
+// A) Thinkpad X230
+db.produits.insert({
+    nom: "Thinkpad X230",
+    fabriquant: "Lenovo",
+    prix: 114358.74,
+    ultrabook: true,
+    options: ["Intel Core i5", "SSD", "Long life battery"]
+})
+
+// B) Macbook Pro
+db.produits.insert({
+    nom: "Macbook Pro",
+    fabriquant: "Apple",
+    prix: 11435.99,
+    options: ["Intel Core i5", "Retina Display", "Long life battery"]
+})
+
+// C) Macbook Air
+db.produits.insert({
+    nom: "Macbook Air",
+    fabriquant: "Apple",
+    prix: 125794.73,
+    ultrabook: true,
+    options: ["Intel Core i7", "SSD", "Long life battery"]
+})
+
+// ---------------------------------------
+// 3) READ Queries
+// ---------------------------------------
+
+// 1. Get all products
+db.produits.find()
+
+// 2. Get first product
+db.produits.findOne()
+
+// 3. Find Thinkpad ID
+var thinkpad = db.produits.findOne({nom: "Thinkpad X230"})
+thinkpad
+
+//    Then fetch by _id
+db.produits.find({_id: thinkpad._id})
+
+// 4. Products with price > 13723
+db.produits.find({prix: {$gt: 13723}})
+
+// 5. First product with ultrabook = true
+db.produits.findOne({ultrabook: true})
+
+// 6. First product with name containing "Macbook"
+db.produits.findOne({nom: /Macbook/})
+
+// 7. Products starting with "Macbook"
+db.produits.find({nom: /^Macbook/})
+
+// ---------------------------------------
+// 4) DELETE
+// ---------------------------------------
+
+// Remove the two Apple products
+db.produits.remove({fabriquant: "Apple"})
+
+// Remove Thinkpad using only its _id
+db.produits.remove({_id: thinkpad._id})
+
+// ---------------------------------------
+// END TP5
+// ---------------------------------------
