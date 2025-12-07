@@ -1,0 +1,5 @@
+apple banana apple orange banana apple
+pear banana orange pear apple
+grape apple banana pear
+orange grape banana apple pear
+banana apple orange grape
